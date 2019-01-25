@@ -1,0 +1,191 @@
+@import url("reset.css");
+
+.wrapper{
+    text-align: center;
+    font-family: sans-serif;
+}
+
+#logo{
+  font-family: fantasy;
+  font-size: 60pt;
+  margin-top: 100pt;
+}
+
+#projects-logo{
+  font-family: fantasy;
+  font-size: 40pt;
+  margin-top: 50pt;
+  margin-bottom: 10pt;
+}
+
+.text-input{
+  border-radius: 3px;
+  border-width: 1px;
+  margin: 3px;
+  font-size: 14pt;
+}
+
+.accept-button{
+  border-width: 1px;
+  background-color: #E0E0E8;
+  border-radius: 3px;
+  margin: 0 auto;
+  width: 44px;
+  padding: 1px;
+  cursor: pointer;
+}
+
+.accept-button:hover{
+  background-color: #bbbbbb;
+}
+
+.top{
+  text-align: center;
+  background-color: #e0e0e0;
+  color: white;
+  font-family: sans-serif;
+  font-size: 16pt;
+  padding: 5px;
+  cursor: default;
+}
+
+.top li{
+  display: inline;
+  margin: 10px;
+}
+
+.top li:hover{
+  color: #888888;
+}
+
+#quit{
+  cursor: pointer;
+}
+
+.projects{
+  margin: 0 auto;
+  width: 600px;
+
+
+}
+
+.project{
+  margin-bottom: 10px;
+  border-style: solid;
+  border-radius: 5px;
+  border-color: #eaeaea;
+  border-width: 1px;
+}
+
+.project-header{
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  font-size: 24pt;
+  background-color: #cccccc;
+  text-align: left;
+  color: white;
+  padding: 3px;
+}
+
+.project-name{
+  float: left;
+  width: 560px;
+}
+
+.project-delete{
+  display: inline;
+  cursor: pointer;
+}
+
+.task{
+  text-align: left;
+  margin: 10px;
+}
+
+.task-checkbox{
+  float: left;
+}
+
+.task-name{
+  float: left;
+  font-size: 14pt;
+  padding-left: 4px;
+  margin-left: 1px;
+  border-left-style: solid;
+  border-left-color: #cccccc;
+  border-left-width: 1px;
+  width: 92%;
+}
+
+.task-delete{
+  cursor: pointer;
+  display: inline;
+}
+
+.no-project{
+  color: #cccccc;
+}
+
+.add-new-project{
+  border-width: 1px;
+  background-color: #e0e0e0;
+  border-radius: 3px;
+  margin: 0 auto;
+  width: 220px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.add-new-project:hover{
+  color: #525252;
+}
+
+.add-new-task{
+  border-width: 1px;
+  background-color: #e0e0e0;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.add-new-task:hover{
+  color: #525252;
+}
+
+.task-name-edit{
+  display: inherit;
+  font-size: 11pt;
+  border-radius: 3px;
+}
+
+.project-name-edit{
+  display: inherit;
+  font-size: 20pt;
+  border-radius: 3px;
+  width: 300px;
+  height: 26px;
+}
+
+#counter{
+  display: inherit;
+}
+
+.register{
+  text-decoration: none;
+  color: black;
+  font-size: 16pt;
+  padding: 3px;
+  border: #9e9e9e;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 3px;
+}
+
+.register:hover{
+  background-color: #f3f3f3;
+}
+
+.register:active{
+  background-color: #dcdada;
+}
