@@ -19,10 +19,7 @@ function updateEventListeners(){
   quitButton.onclick = function(){quit_Clicked();}
 
   for(var i = 0; i < checkBoxes.length; i++)
-    checkBoxes[i].addEventListener("click", function(){
-      var taskID = this.parentElement.getAttribute("task_id");
-      SendRequest('post', '../asyncHandler.php', 'type=checkBoxChanged&task_id=' + taskID, function(res){console.log(res);});
-    }, false)
+    checkBoxes[i].addEventListener("click", taskState_Changed, false)
 
   for(var i = 0; i < projectNames.length; i++)
     projectNames[i].addEventListener("dblclick", projectName_DblClicked, false)
@@ -45,6 +42,7 @@ function updateEventListeners(){
 
 function taskAdds_Clicked() {
   var project = this.parentElement;
+  console.log(project);
   project.children[1].innerHTML += '<div id="TE" task_id="null" class="task">'+
     '<input class="task-checkbox" type="checkbox"></input>'+
     '<p class="task-name">'+
@@ -60,6 +58,16 @@ function taskAdds_Clicked() {
   }
   window.updTaskName = document.getElementById('TE').children[1];
   window.updTaskName.addEventListener("keypress", addNewTask_Done, false);
+}
+
+function taskState_Changed(){
+  var task = this.parentElement;
+  var taskID = task.getAttribute("task_id");
+  SendRequest('post', '../asyncHandler.php', 'type=checkBoxChanged&task_id=' + taskID, function(res){console.log(res);});
+  if(!this.checked)
+    this.removeAttribute('checked');
+  else
+    this.setAttribute('checked', '');
 }
 
 function addNewTask_Done(e){
@@ -173,7 +181,6 @@ function projectName_Out(e){
   e.innerHTML = e.firstChild.value;
   window.updProjectName = 0;
 }
-
 
 function taskName_Out(e){
   var taskName = e.firstChild.value;
