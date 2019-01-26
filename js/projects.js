@@ -90,6 +90,9 @@ function addNewTask_Done(e){
 
 function addNewProject(){
   var projects = document.getElementsByClassName('projects')[0];
+  if(parseInt(document.getElementById('counter').innerText) == 0)
+    projects.innerHTML = "";
+
   projects.innerHTML += '<div id="E" project_id="null" class="project">' +
     '<div class="project-header">'+
       '<div class="project-name">'+
@@ -204,9 +207,12 @@ function taskName_Changed(e){
 
 function projectDelete_Clicked(){
   var projectID = this.parentElement.parentElement.getAttribute("project_id");
+  var projects = document.getElementsByClassName('projects')[0];
   this.parentElement.parentElement.remove();
   SendRequest('post', '../asyncHandler.php', 'type=deleteProject&project_id=' + projectID, function(){});
   minusProject();
+  if(parseInt(document.getElementById('counter').innerText) == 0)
+    projects.innerHTML = '<p class="no-project">You have no projects yet</p><br>';
 }
 
 function taskDelete_Clicked(){
