@@ -36,13 +36,18 @@ function updateEventListeners(){
   for(var i = 0; i < taskAdds.length; i++)
     taskAdds[i].addEventListener("click", taskAdds_Clicked, false);
 
-  window.updProjectName = 0;
-  window.updTaskName = 0;
+  window.updTaskName = (document.getElementById('TE') != null) ? document.getElementById('TE').children[1] : 0;
+  window.updProjectName = (document.getElementById('E') != null) ? document.getElementById('E').firstChild.firstChild : 0;
 }
 
 function taskAdds_Clicked() {
+  console.log('In : ' + window.updTaskName);
+  if(window.updTaskName != 0){
+    addNewTask_Done(window.updTaskName);
+    console.log('freed');
+  }
+
   var project = this.parentElement;
-  console.log(project);
   project.children[1].innerHTML += '<div id="TE" task_id="null" class="task">'+
     '<input class="task-checkbox" type="checkbox"></input>'+
     '<p class="task-name">'+
@@ -52,48 +57,68 @@ function taskAdds_Clicked() {
       'X'+
     '</p>'+
   '</div>';
+  var freshTask = document.getElementById('TE');
 
-  if(window.updTaskName != 0){
-    taskName_Out(window.updTaskName);
-  }
-  window.updTaskName = document.getElementById('TE').children[1];
-  window.updTaskName.addEventListener("keypress", addNewTask_Done, false);
+  window.updTaskName = freshTask.children[1];
+  window.updTaskName.addEventListener("keypress", addNewTask_KeyPressed, false);
+
+  freshTask.children[2].addEventListener('click', discardAddTask_Click, false);
+  console.log('Out : ' + window.updTaskName);
+}
+
+function discardAddTask_Click(){
+  window.updTaskName.removeEventListener('click', discardAddTask_Click, false);
+  document.getElementById('TE').remove();
+  window.updTaskName = 0;
 }
 
 function taskState_Changed(){
   var task = this.parentElement;
   var taskID = task.getAttribute("task_id");
-  SendRequest('post', '../asyncHandler.php', 'type=checkBoxChanged&task_id=' + taskID, function(res){console.log(res);});
+  SendRequest('post', '../asyncHandler.php', 'type=checkBoxChanged&task_id=' + taskID, function(){});
   if(!this.checked)
     this.removeAttribute('checked');
   else
     this.setAttribute('checked', '');
 }
 
-function addNewTask_Done(e){
-  var key = e.which || e.keyCode;
-  if (key === 13) {
-    window.updTaskName.removeEventListener("keypress", addNewTask_Done, false);
-    var taskName = this.firstChild.value;
-    var projectID = this.parentElement.parentElement.parentElement.getAttribute('project_id');
-    if(taskName.length <= 0 || taskName.length > 30){
-      alert("Incorrect length! (0, 31) symbols");
+function addNewTask_Done(parent){
+  window.updTaskName.removeEventListener("keypress", addNewTask_KeyPressed, false);
+  var taskName = parent.firstChild.value;
+  var projectID = parent.parentElement.parentElement.parentElement.getAttribute('project_id');
+  if(taskName.length <= 0 || taskName.length > 30){
+    alert("Incorrect length! (0, 31) symbols");
+    return;
+  }
+  SendRequest('post', '../asyncHandler.php', 'type=addNewTask&name=' + taskName + '&project_id=' + projectID, function(res){
+    if(res == -1){
+      alert("Error occured!");
       return;
     }
+    var editing = document.getElementById('TE');
+    editing.setAttribute('task_id', res);
+    editing.id = "";
+    updateEventListeners();
+  });
+  parent.innerHTML = taskName;
+}
 
-    SendRequest('post', '../asyncHandler.php', 'type=addNewTask&name=' + taskName + '&project_id=' + projectID, function(res){
-      if(res == -1){
-        alert("Error occured!");
-        return;
-      }
-      var editing = document.getElementById('TE');
-      editing.setAttribute('task_id', res);
-      editing.id = "";
-      updateEventListeners();
-    });
-    this.innerHTML = taskName;
-    window.updTaskName = 0;
+function taskName_Out(e){
+  var taskName = e.firstChild.value;
+  if(taskName.length <= 0 || taskName.length > 30){
+    alert("Incorrect length! (0, 31) symbols");
+    return;
   }
+  var taskID = e.parentElement.getAttribute("task_id");
+  SendRequest('post', '../asyncHandler.php', 'type=taskNameChange&task_id=' + taskID + '&name=' + taskName, function(){});
+  e.innerHTML = taskName;
+  updateEventListeners();
+}
+
+function addNewTask_KeyPressed(e){
+  var key = e.which || e.keyCode;
+  if (key === 13)
+    addNewTask_Done(this);
 }
 
 function addNewProject(){
@@ -112,12 +137,21 @@ function addNewProject(){
     '<p class="add-new-task">Add new task</p>'+
   '</div>';
 
-  if(window.updProjectName != 0){
+  var freshProject = document.getElementById('E');
+
+  if(window.updProjectName != 0)
     projectName_Out(window.updProjectName);
-    console.log("ok");
-  }
-  window.updProjectName = document.getElementById('E').firstChild.firstChild;
+
+  window.updProjectName = freshProject.firstChild.firstChild;
   window.updProjectName.addEventListener("keypress", addNewProject_Done, false);
+
+  freshProject.firstChild.children[1].addEventListener("click", discardAddProject_Click, false);
+}
+
+function discardAddProject_Click(){
+  window.updProjectName.removeEventListener("click", discardAddProject_Click, false);
+  document.getElementById('E').remove();
+  window.updProjectName = 0;
 }
 
 function addNewProject_Done(e){
@@ -145,12 +179,9 @@ function addNewProject_Done(e){
 }
 
 function projectName_DblClicked(){
-  console.log("o");
-  if(window.updProjectName != 0){
+  if(window.updProjectName != 0)
     projectName_Out(window.updProjectName);
-    console.log("ok");
-    return;
-  }
+
   window.updProjectName = this;
   var projectID = this.parentElement.parentElement.getAttribute("project_id");
   this.innerHTML = '<input class="project-name-edit" type="text" value="'+ this.innerText +'">';
@@ -158,11 +189,9 @@ function projectName_DblClicked(){
 }
 
 function taskNames_DblClicked(){
-  if(window.updTaskName != 0){
+  if(window.updTaskName != 0)
     taskName_Out(window.updTaskName);
-    console.log("ok");
-    return;
-  }
+
   window.updTaskName = this;
   var taskID = this.parentElement.getAttribute("task_id");
   this.innerHTML = '<input class="task-name-edit" type="text" value="'+ this.innerText +'">';
@@ -177,23 +206,9 @@ function projectName_Out(e){
   }
   var projectID = e.parentElement.parentElement.getAttribute("project_id");
   SendRequest('post', '../asyncHandler.php', 'type=projectNameChange&project_id=' + projectID + '&name=' + projectName, function(){});
-  //console.log(projectID + " sent " + projectName);
   e.innerHTML = e.firstChild.value;
   window.updProjectName = 0;
 }
-
-function taskName_Out(e){
-  var taskName = e.firstChild.value;
-  if(taskName.length <= 0 || taskName.length > 30){
-    alert("Incorrect length! (0, 31) symbols");
-    return;
-  }
-  var taskID = e.parentElement.getAttribute("task_id");
-  SendRequest('post', '../asyncHandler.php', 'type=taskNameChange&task_id=' + taskID + '&name=' + taskName, function(res){console.log(res);});
-  e.innerHTML = taskName;
-  window.updTaskName = 0;
-}
-
 
 function taskName_Changed(e){
   var key = e.which || e.keyCode;
@@ -205,8 +220,7 @@ function taskName_Changed(e){
       return;
     }
     var taskID = this.parentElement.getAttribute("task_id");
-    //console.log(taskName + ' ' + taskID);
-    SendRequest('post', '../asyncHandler.php', 'type=taskNameChange&task_id=' + taskID + '&name=' + taskName, function(res){console.log(res);});
+    SendRequest('post', '../asyncHandler.php', 'type=taskNameChange&task_id=' + taskID + '&name=' + taskName, function(){});
     this.innerHTML = taskName;
     window.updTaskName = 0;
   }
@@ -225,7 +239,7 @@ function projectDelete_Clicked(){
 function taskDelete_Clicked(){
   var taskID = this.parentElement.getAttribute("task_id");
   this.parentElement.remove();
-  SendRequest('post', '../asyncHandler.php', 'type=deleteTask&task_id=' + taskID, function(res){console.log(res);});
+  SendRequest('post', '../asyncHandler.php', 'type=deleteTask&task_id=' + taskID, function(){});
 }
 
 function projectName_Changed(e){
@@ -238,7 +252,6 @@ function projectName_Changed(e){
     }
     var projectID = this.parentElement.parentElement.getAttribute("project_id");
     SendRequest('post', '../asyncHandler.php', 'type=projectNameChange&project_id=' + projectID + '&name=' + projectName, function(){});
-    //console.log();
     this.innerHTML = projectName;
     window.updProjectName = 0;
   }
