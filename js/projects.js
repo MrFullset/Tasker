@@ -52,7 +52,7 @@ function taskDelete_Clicked(){
 
 function taskPriotirizes_Clicked(){
   var taskID = this.parentElement.getAttribute("task_id");
-  var taskName = this.previousSibling.innerText;
+  var taskName = this.previousSibling.previousSibling.innerText;
   var projects = document.getElementsByClassName('projects')[0];
 
   SendRequest('post', '../asyncHandler.php', 'type=priotirizeTaskToProject&task_id=' + taskID + '&task_name=' + taskName, function(res){
@@ -94,6 +94,7 @@ function taskAdds_Clicked() {
 
   freshTask.children[3].addEventListener('click', discardAddTask_Click, false);
   console.log('Out : ' + window.updTaskName);
+  updateEventListeners();
 }
 
 function discardAddTask_Click(){
