@@ -16,6 +16,8 @@ class Task{
   public function getUserID(){return $this->user_id;}
 
   public function __construct($id){
+    if($id == NULL)
+      return;
     $this->mysql = new MySQLProvider();
     $this->mysql->Connect();
     $response = $this->mysql->MakeRequest("SELECT * FROM `tasks` WHERE `id` LIKE '".$id."'");

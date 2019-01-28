@@ -95,6 +95,18 @@ switch ($type) {
     session_regenerate_id(true);
     $_SESSION = array();
     break;
+  case 'priotirizeTaskToProject':
+    $name =  $_POST['task_name'];
+    $taskID = $_POST['task_id'];
+    if(strlen($name) > 31){
+      echo -1;
+      return;
+    }
+    $task = new Task($taskID);
+    $project = Project::Create($name, $user->getID());
+    $task->Delete();
+    echo $project->getID();
+    break;
   default:
     echo "ERROR4";
     break;

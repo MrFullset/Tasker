@@ -76,10 +76,8 @@ foreach($projects as $project){
                           <p class="task-name">
                             '.$task->getName().'
                           </p>
-
-                          <p class="task-delete">
-                            X
-                          </p>
+                          <img class="task-priotirize" src="img/priotirize.png" alt="Priotirize task to project">
+                          <img class="task-delete" src="img/delete.png" alt="Delete task">
                         </div>
                         ';
                       }

@@ -89,7 +89,7 @@
 
 .project-name{
   float: left;
-  width: 560px;
+  width: 95%;
 }
 
 .project-delete{
@@ -114,12 +114,19 @@
   border-left-style: solid;
   border-left-color: #cccccc;
   border-left-width: 1px;
-  width: 92%;
+  width: 86%;
 }
 
 .task-delete{
   cursor: pointer;
   display: inline;
+  width: 20px;
+}
+
+.task-priotirize{
+  cursor: pointer;
+  display: inline;
+  width: 20px;
 }
 
 .no-project{

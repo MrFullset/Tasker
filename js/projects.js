@@ -12,6 +12,7 @@ function updateEventListeners(){
   var taskDeletes = document.getElementsByClassName('task-delete');
   var taskNames = document.getElementsByClassName('task-name');
   var taskAdds = document.getElementsByClassName('add-new-task');
+  var taskPriotirizes = document.getElementsByClassName('task-priotirize');
 
   var quitButton = document.getElementById('quit');
 
@@ -36,8 +37,38 @@ function updateEventListeners(){
   for(var i = 0; i < taskAdds.length; i++)
     taskAdds[i].addEventListener("click", taskAdds_Clicked, false);
 
+  for(var i = 0; i < taskPriotirizes.length; i++)
+    taskPriotirizes[i].addEventListener("click", taskPriotirizes_Clicked, false);
+
   window.updTaskName = (document.getElementById('TE') != null) ? document.getElementById('TE').children[1] : 0;
   window.updProjectName = (document.getElementById('E') != null) ? document.getElementById('E').firstChild.firstChild : 0;
+}
+
+function taskDelete_Clicked(){
+  var taskID = this.parentElement.getAttribute("task_id");
+  this.parentElement.remove();
+  SendRequest('post', '../asyncHandler.php', 'type=deleteTask&task_id=' + taskID, function(){});
+}
+
+function taskPriotirizes_Clicked(){
+  var taskID = this.parentElement.getAttribute("task_id");
+  var taskName = this.previousSibling.innerText;
+  var projects = document.getElementsByClassName('projects')[0];
+
+  SendRequest('post', '../asyncHandler.php', 'type=priotirizeTaskToProject&task_id=' + taskID + '&task_name=' + taskName, function(res){
+      projects.innerHTML += '<div project_id="'+ res +'" class="project">' +
+        '<div class="project-header">'+
+          '<div class="project-name">'+
+            taskName +
+          '</div>'+
+          '<div class="project-delete">X</div>'+
+        '</div>'+
+        '<div class="tasks"></div>'+
+        '<p class="add-new-task">Add new task</p>'+
+      '</div>';
+      updateEventListeners();
+  });
+  this.parentElement.remove();
 }
 
 function taskAdds_Clicked() {
@@ -53,16 +84,15 @@ function taskAdds_Clicked() {
     '<p class="task-name">'+
       '<input class="task-name-edit" type="text" value="New Task">'+
     '</p>'+
-    '<p class="task-delete">'+
-      'X'+
-    '</p>'+
+    '<img class="task-priotirize" src="img/priotirize.png" alt="Priotirize task to project">' +
+    '<img class="task-delete" src="img/delete.png" alt="Delete task">' +
   '</div>';
   var freshTask = document.getElementById('TE');
 
   window.updTaskName = freshTask.children[1];
   window.updTaskName.addEventListener("keypress", addNewTask_KeyPressed, false);
 
-  freshTask.children[2].addEventListener('click', discardAddTask_Click, false);
+  freshTask.children[3].addEventListener('click', discardAddTask_Click, false);
   console.log('Out : ' + window.updTaskName);
 }
 
@@ -70,6 +100,7 @@ function discardAddTask_Click(){
   window.updTaskName.removeEventListener('click', discardAddTask_Click, false);
   document.getElementById('TE').remove();
   window.updTaskName = 0;
+  updateEventListeners();
 }
 
 function taskState_Changed(){
@@ -152,6 +183,7 @@ function discardAddProject_Click(){
   window.updProjectName.removeEventListener("click", discardAddProject_Click, false);
   document.getElementById('E').remove();
   window.updProjectName = 0;
+  updateEventListeners();
 }
 
 function addNewProject_Done(e){
@@ -236,11 +268,6 @@ function projectDelete_Clicked(){
     projects.innerHTML = '<p class="no-project">You have no projects yet</p><br>';
 }
 
-function taskDelete_Clicked(){
-  var taskID = this.parentElement.getAttribute("task_id");
-  this.parentElement.remove();
-  SendRequest('post', '../asyncHandler.php', 'type=deleteTask&task_id=' + taskID, function(){});
-}
 
 function projectName_Changed(e){
   var key = e.which || e.keyCode;
