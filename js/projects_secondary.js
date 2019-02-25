@@ -1,3 +1,16 @@
+/**
+This is a file with js functions for projects.php. Using ajax.js
+
+
+Methods:
+  timeUpdate() - updates time on the page.
+  minusProject() - decreases project quantity.
+  plusProject() - increases project quantity.
+  quit_Clicked() - Click handler for Quit button. Sends request to server.
+    Jumps to index.php
+
+**/
+
 function timeUpdate(){
   var currentdate = new Date();
   var time = document.getElementById('time');

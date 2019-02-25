@@ -1,3 +1,86 @@
+/*
+This is a file with js functions for projects.php. Using ajax.js
+
+Global listeners:
+  project-name        (DblClick)
+  project-delete      (Click)
+  add-new-project     (Click)
+  task-checkbox       (Click)
+  task-delete         (Click)
+  task-name           (DblClick)
+  add-new-task        (Click)
+  task-priotirize     (Click)
+  quit                (Click)
+  projectAdd_onClick  (Click)
+  quitButton_onClick  (Click)
+
+Methods:
+  updateEventListeners()
+    Updates all event listeners on page. Used when some element were dynamicly
+    added to page
+
+  taskDelete_Clicked()
+    Deletes task. Calls when task-delete got clicked
+
+  taskPriotirizes_Clicked()
+    Priotirize task. Calls when task-priotirize got clicked
+
+  taskAdds_Clicked()
+    Add new task. Calls when add-new-task got clicked
+
+  discardAddTask_Click()
+    Removes page on previous state before task was created.
+    Calls when task-delete got clicked on unfilled task.
+
+  taskState_Changed()
+    Updates task status. Calls when task-checkbox got clicked
+
+  addNewTask_Done()
+    Handles adding new task after server response
+
+  taskName_Out()
+    Calls when unfilled task comes out from focus
+
+  addNewTask_KeyPressed(e)
+    Handles keypressing on unfilled task name field. If Enter button pressed
+    calls addNewTask_Done()
+
+  addNewProject()
+    Adds new project. Calls when projectAdd got clicked
+
+  discardAddProject_Click()
+    Removes page on previous state before project was created.
+    Calls when project-delete got clicked on unfilled project.
+
+  addNewProject_Done(e)
+    Handles adding new project after server response
+
+  projectName_DblClicked()
+    Makes input box of label to edit project's name. Prepares project to change
+    name. Calls when project-name got double clicked
+
+  taskNames_DblClicked()
+    Makes input box of label to edit project's name. Prepares task to change
+    name. Calls when task-name got double clicked
+
+  projectName_Out(e)
+    Calls when unfilled project comes out from focus
+
+  taskName_Changed(e)
+    Updates task name. Calls when task-name got updated
+
+  projectDelete_Clicked()
+    Deletes project. Calls when project-delete got clicked
+
+  projectName_Changed(e)
+    Updates project name. Calls when project-name got updated
+
+
+ *unfilled task|project means task|project, that was created by user, but
+  wasn't submitted by Enter
+*/
+
+
 window.onload = function(){
   updateEventListeners();
   setInterval(timeUpdate, 5000);

@@ -1,8 +1,16 @@
 <?php
+/**
+This page is start point. User inputs login and password and them will be
+sent by AJAX to auth.php. In case if user is logged in redirects to
+projects.php
+**/
+
+
 require_once("classes/MySQLProvider.php");
 require_once("classes/User.php");
 session_start();
 
+//check if user logged in
 if(isset($_SESSION['user'])){
   $user = unserialize($_SESSION['user']);
   if($user->getID() != -1){

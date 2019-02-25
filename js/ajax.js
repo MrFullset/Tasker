@@ -1,10 +1,28 @@
+/**
+This is an interface to make AJAX requests and handle responses from server.
+Compatible with Internet Explorer
+
+Internal method:
+  CreateRequest() - Creates correct AJAX request object.
+Method:
+  SendRequest(r_method, r_path, r_args, r_handler) - Sends requests and throws
+    response to r_handler.
+    Arguments:
+      r_method - type of method ("post" || "get")
+      r_path - handler location
+      r_args - variables to transfer ("var1=1&var2=2")
+      r_handler - function that handles response
+
+
+**/
+
+
 function CreateRequest()
 {
     var Request = false;
 
     if (window.XMLHttpRequest)
     {
-        //Gecko-совместимые браузеры, Safari, Konqueror
         Request = new XMLHttpRequest();
     }
     else if (window.ActiveXObject)
@@ -22,7 +40,7 @@ function CreateRequest()
 
     if (!Request)
     {
-        alert("Невозможно создать XMLHttpRequest");
+        alert("Unable to create XMLHttpRequest");
     }
 
     return Request;
@@ -43,7 +61,7 @@ function SendRequest(r_method, r_path, r_args, r_handler)
           {
               if (Request.status == 200)
               {
-                  //ВОТ ТУТ НАДО ОБРАБОТАТЬ ОТВЕТ ОТ СЕРВЕРА
+                  //handling server response
                   r_handler(Request.responseText);
               }
               else

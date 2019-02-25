@@ -1,10 +1,17 @@
 <?php
+/**
+This page contains projects and tasks. Comunicates with AJAX with asyncHandler.php
+In case if user isn't logged in redirects to index.php
+**/
+
+
 require_once("classes/MySQLProvider.php");
 require_once("classes/User.php");
 require_once("classes/Project.php");
 require_once("classes/Task.php");
 session_start();
 
+//check if user logged in
 if(!isset($_SESSION['user'])){
   header('Location: index.php');
 }
@@ -20,6 +27,7 @@ $login = $user->getLogin();
 
 $projects = $user->GetData();
 $tasksInProgressCount = 0;
+//counting of undone tasks (status : 0)
 foreach($projects as $project){
   foreach ($project->getTasks() as $task) {
     if($task->getStatus() == 0)
@@ -49,6 +57,7 @@ foreach($projects as $project){
       <p id="projects-logo">TaskPlanner</p>
         <div class="projects">
           <?php
+          //forming list of projects and tasks
             if(count($projects) == 0){
               echo '<p class="no-project">You have no projects yet</p><br>';
             }
@@ -63,14 +72,15 @@ foreach($projects as $project){
                     <div class="project-delete">X</div>
                   </div>
                   <div class="tasks">';
+
                     if(count($project->getTasks()) == 0){
-                      //echo '<p class="add-new-task">Add new task</p>';
                     }
                     else{
                       foreach ($project->getTasks() as $task) {
                         echo '
                         <div task_id="'.$task->getID().'" class="task">
                           <input class="task-checkbox" type="checkbox"';
+                            //if status 1 adds attribute checked to task's checkbox
                             echo ($task->getStatus() != 0) ? 'checked' : '';
                           echo '></input>
                           <p class="task-name">

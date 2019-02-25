@@ -1,3 +1,19 @@
+/**
+This is a file with js functions for index.php. Using ajax.js
+
+Global variables:
+  isResponsePositive - Server's response status
+
+Global listeners:
+  submit-login - Submit login button
+
+Methods:
+  onload - Starts on page load. Sets listeners to login and password fields
+  checkString(string, lengthFrom, lengthTo) - Checks string by regular expression.
+    Takes as arguments checking string and arrange of allowed lengths.
+  Auth() - Tries to authenticate user with input credentials.
+  resultHandler(result) - Handles a response from server.
+**/
 window.isResponsePositive = true;
 window.onload = function(){
   var login = document.getElementById('login');

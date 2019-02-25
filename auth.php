@@ -1,4 +1,31 @@
 <?php
+/**
+This file provides access to backend with AJAX.
+Handles frontend requests from page /index.php and /register.php
+
+All requests must be sent with POST method. Must be variable 'type' which
+contains one of following types. Also must be sent variables 'login' and
+'password'.
+
+Allowed requests:
+
+  auth:
+    Makes attempt to authenticate user with sended credentials
+    Returned values:
+       1 - success
+      -1 - login is incorrect
+      -2 - password is incorrect
+      E - error occurred
+
+  register:
+    Makes attempt to register user with sended credentials
+    Returned values:
+       1 - success
+       0 - user exists
+
+
+**/
+
 require_once("classes/MySQLProvider.php");
 require_once("classes/User.php");
 
@@ -25,15 +52,16 @@ switch ($type) {
     $result = $tryUser->Auth();
     switch ($result) {
       case 1:
+        //serialize user to session to use in future
         $_SESSION['user'] = serialize($tryUser);
         echo $result;
         break;
-        case -1:
-        case -2:
+        case -1: //incorrect login
+        case -2: //incorrect password
           echo $result;
           break;
       default:
-        echo 'E';
+        echo 'E'; //error occured
         break;
       }
         break;
@@ -43,7 +71,7 @@ switch ($type) {
     if($user != NULL)
       echo 1;
     else
-      echo 0;
+      echo 0; //user exists
     break;
   default:
     break;
