@@ -20,10 +20,10 @@ function updateEventListeners(){
   quitButton.onclick = function(){quit_Clicked();}
 
   for(var i = 0; i < checkBoxes.length; i++)
-    checkBoxes[i].addEventListener("click", taskState_Changed, false)
+    checkBoxes[i].addEventListener("click", taskState_Changed, false);
 
   for(var i = 0; i < projectNames.length; i++)
-    projectNames[i].addEventListener("dblclick", projectName_DblClicked, false)
+    projectNames[i].addEventListener("dblclick", projectName_DblClicked, false);
 
   for(var i = 0; i < taskDeletes.length; i++)
     taskDeletes[i].addEventListener("click", taskDelete_Clicked, false);
@@ -154,6 +154,8 @@ function addNewTask_KeyPressed(e){
 }
 
 function addNewProject(){
+  if(window.updProjectName != 0)
+    projectName_Out(window.updProjectName);
   var projects = document.getElementsByClassName('projects')[0];
   if(parseInt(document.getElementById('counter').innerText) == 0)
     projects.innerHTML = "";
@@ -170,9 +172,6 @@ function addNewProject(){
   '</div>';
 
   var freshProject = document.getElementById('E');
-
-  if(window.updProjectName != 0)
-    projectName_Out(window.updProjectName);
 
   window.updProjectName = freshProject.firstChild.firstChild;
   window.updProjectName.addEventListener("keypress", addNewProject_Done, false);
@@ -238,15 +237,27 @@ function projectName_Out(e){
     return;
   }
   var projectID = e.parentElement.parentElement.getAttribute("project_id");
-  SendRequest('post', '../asyncHandler.php', 'type=projectNameChange&project_id=' + projectID + '&name=' + projectName, function(){});
-  e.innerHTML = e.firstChild.value;
-  window.updProjectName = 0;
+  if(projectID == "null"){
+    SendRequest('post', '../asyncHandler.php', 'type=addNewProject&name=' + projectName, function(res){
+      if(res == -1){
+        alert("Error occured!");
+        return;
+      }
+      var editing = document.getElementById('E');
+      editing.setAttribute('project_id', res);
+      editing.id = "";
+      editing.firstChild.firstChild.innerHTML = editing.firstChild.firstChild.firstChild.value;
+      plusProject();
+      updateEventListeners();
+    });
+  }
+  else
+    SendRequest('post', '../asyncHandler.php', 'type=projectNameChange&project_id=' + projectID + '&name=' + projectName, function(){});
 }
 
 function taskName_Changed(e){
   var key = e.which || e.keyCode;
   if (key === 13) {
-
     var taskName = (this.firstChild.value == undefined) ? this.firstChild.data : this.firstChild.value;
     if(taskName.length <= 0 || taskName.length > 30){
       alert("Incorrect length! (0, 31) symbols");
