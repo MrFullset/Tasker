@@ -28,8 +28,8 @@ class MySQLProvider{
   private $link;
 
   public function __construct(){
-    $this->user = 'login';
-    $this->password = 'password';
+    $this->user = 'mrfullset';
+    $this->password = '123456';
     $this->resource = '127.0.0.1';
   }
 
