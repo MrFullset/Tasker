@@ -81,6 +81,8 @@ require_once("classes/MySQLProvider.php");
 require_once("classes/User.php");
 require_once("classes/Project.php");
 require_once("classes/Task.php");
+require_once("classes/StringChecker.php");
+
 session_start();
 
 //is var with serialized user exists
@@ -133,46 +135,50 @@ switch ($type) {
     break;
   case 'projectNameChange':
     //is name in allowed arrange
-    if(strlen($_POST['name']) > 31){
+    if(!StringChecker::Check('innerHTML', $_POST['name'])){
       echo 0;
       return;
     }
     $project = new Project($_POST['project_id']);
+    $name = $_POST['name'];
     if($user->getID() == $project->getUserID()){
-      $project->UpdateName($_POST['name']);
+      $project->UpdateName($name);
       echo 1;
     }
     else echo 0;
     break;
   case 'taskNameChange':
     //is name in allowed arrange
-    if(strlen($_POST['name']) > 31){
+    if(!StringChecker::Check('innerHTML', $_POST['name'])){
       echo 0;
       return;
     }
     $task = new Task($_POST['task_id']);
+    $name = $_POST['name'];
     if($user->getID() == $task->getUserID()){
-      $task->UpdateName($_POST['name']);
+      $task->UpdateName($name);
       echo 1;
     }
     else echo 0;
     break;
   case 'addNewProject':
     //is name in allowed arrange
-    if(strlen($_POST['name']) > 31){
-      echo -1;
+    if(!StringChecker::Check('innerHTML', $_POST['name'])){
+      echo 0;
       return;
     }
-    $project = Project::Create($_POST['name'], $user->getID());
+    $name = $_POST['name'];
+    $project = Project::Create($name, $user->getID());
     echo $project->getID();
     break;
   case 'addNewTask':
     //is name in allowed arrange
-    if(strlen($_POST['name']) > 31){
-      echo -1;
+    if(!StringChecker::Check('innerHTML', $_POST['name'])){
+      echo 0;
       return;
     }
-    $task = Task::Create($_POST['name'], $_POST['project_id']);
+    $name = $_POST['name'];
+    $task = Task::Create($name, $_POST['project_id']);
     echo $task->getID();
     break;
   case 'quit':
@@ -181,13 +187,13 @@ switch ($type) {
     $_SESSION = array();
     break;
   case 'priotirizeTaskToProject':
-    $name =  $_POST['task_name'];
-    $taskID = $_POST['task_id'];
     //is name in allowed arrange
-    if(strlen($name) > 31){
-      echo -1;
+    if(!StringChecker::Check('innerHTML', $_POST['name'])){
+      echo 0;
       return;
     }
+    $taskID = $_POST['task_id'];
+    $name =  $_POST['task_name'];
     $task = new Task($taskID);
     $project = Project::Create($name, $user->getID());
     $task->Delete();
