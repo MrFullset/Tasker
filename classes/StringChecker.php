@@ -10,31 +10,29 @@ as arguments should be given TYPE and STRING.
 
 
 Types:
-  'login' - login format 1-30 symbols
-  'pass' - password format 6-30 symbols, at least 1 capital and 1 number
+  'login'     - login format 1-30 symbols
+  'pass'      - password format 6-30 symbols, at least 1 capital and 1 number
   'innerHTML' - text format for fields (project names, task names etc)
+  'id'        - ids fromat numeric, not negative
 
 
 */
 
   class StringChecker
   {
-    private $type;
-    private $isCreated;
+    function __construct()
+    {}
 
-    function __construct($type)
-    {
+    public function SCheck($type, $string){
       switch ($type) {
         case 'login':
         case 'pass':
         case 'innerHTML':
-          $this->type = $type;
-          $this->isCreated = true;
+        case 'id':
+          return $this->$type($string);
           break;
         default:
-          $this->isCreated = false;
-          $this->type = NULL;
-          break;
+          return -1;
       }
     }
 
@@ -43,6 +41,7 @@ Types:
         case 'login':
         case 'pass':
         case 'innerHTML':
+        case 'id':
           return (new StringChecker(NULL))->$type($string);
           break;
         default:
@@ -66,6 +65,13 @@ Types:
 
     private function innerHTML($string){
       preg_match('/^[^\'\";()<>]{1,30}$/', $string, $matches, PREG_OFFSET_CAPTURE);
+      if(count($matches))
+        return true;
+      return false;
+    }
+
+    private function id($string){
+      preg_match('/^[1-9]+$/', $string, $matches, PREG_OFFSET_CAPTURE);
       if(count($matches))
         return true;
       return false;
