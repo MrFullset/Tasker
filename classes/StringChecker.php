@@ -65,7 +65,7 @@ Types:
     }
 
     private function innerHTML($string){
-      preg_match('/^[^\'\";()]{1,30}$/', $string, $matches, PREG_OFFSET_CAPTURE);
+      preg_match('/^[^\'\";()<>]{1,30}$/', $string, $matches, PREG_OFFSET_CAPTURE);
       if(count($matches))
         return true;
       return false;
