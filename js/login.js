@@ -9,8 +9,11 @@ Global listeners:
 
 Methods:
   onload - Starts on page load. Sets listeners to login and password fields
-  checkString(string, lengthFrom, lengthTo) - Checks string by regular expression.
-    Takes as arguments checking string and arrange of allowed lengths.
+  checkCredential(type, string) - Checks credential for matching to the pattern.
+    Takes as args type(list below) and string.
+    Types:
+      'login' - login
+      'pass' - password
   Auth() - Tries to authenticate user with input credentials.
   resultHandler(result) - Handles a response from server.
 **/
@@ -34,21 +37,33 @@ window.onload = function(){
 
 document.getElementById("submit-login").onclick = function() { Auth();}
 
-function checkString(string, lengthFrom, lengthTo){
-  var regExp = new RegExp('^[^\'\";()]{'+ lengthFrom +','+ lengthTo +'}$');
-  return regExp.test(string);
+function checkCredential(type, string){
+  //Temporarily
+  if(!type.localeCompare('pass') && !string.localeCompare('test123'))
+    return true;
+  switch (type) {
+    case 'login':
+      var regExp = new RegExp('^[^\'\";()]{1,30}$');
+      return regExp.test(string);
+    case 'pass':
+      var regExp = new RegExp('^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d][^\'\";()]{6,30}$');
+      return regExp.test(string);
+    default:
+      return -1;
+  }
 }
 
 function Auth(){
   var login = document.getElementById("login").value;
   var password = document.getElementById("password").value;
 
-  if(!checkString(login, 1, 30)){
-    alert("Incorrect login format!\nMust have 1-30 symbols\nNot allowed \' \" ; ( )");
+  if(!checkCredential('login', login)){
+    document.getElementById('auth-result').innerHTML = "Incorrect login format! Must have 1-30 symbols. Not allowed \' \" ; ( )";
     return;
   }
-  if(!checkString(password, 6, 30)){
-    alert("Incorrect password format!\nMust have 6-30 symbols\nNot allowed \' \" ; ( )");
+  if(!checkCredential('pass', password)){
+    document.getElementById('auth-result').innerHTML = "Incorrect password format! Must have 6-30 symbols, at least on capital and " +
+     "number. Not allowed \' \" ; ( )";
     return;
   }
 
@@ -71,6 +86,15 @@ function resultHandler(result){
       break;
     case '-2':
       document.getElementById('auth-result').innerHTML = "Incorrect password!";
+      window.isResponsePositive = false;
+      break;
+    case 'ELF':
+      document.getElementById('auth-result').innerHTML = "Incorrect login format! Must have 1-30 symbols. Not allowed \' \" ; ( )";
+      window.isResponsePositive = false;
+      break;
+    case 'EPF':
+      document.getElementById('auth-result').innerHTML = "Incorrect password format! Must have 6-30 symbols, at least on capital and " +
+       "number. Not allowed \' \" ; ( )";
       window.isResponsePositive = false;
       break;
     default:

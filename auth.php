@@ -12,10 +12,12 @@ Allowed requests:
   auth:
     Makes attempt to authenticate user with sended credentials
     Returned values:
-       1 - success
-      -1 - login is incorrect
-      -2 - password is incorrect
-      E - error occurred
+       1  - success
+      -1  - login is incorrect
+      -2  - password is incorrect
+      ELF - login format is incorrect
+      EPF - password format is incorrect
+      E   - error occurred
 
   register:
     Makes attempt to register user with sended credentials
@@ -28,6 +30,7 @@ Allowed requests:
 
 require_once("classes/MySQLProvider.php");
 require_once("classes/User.php");
+require_once("classes/StringChecker.php");
 
 
 session_start();
@@ -36,14 +39,16 @@ $login = $_POST['login'];
 $password = $_POST['password'];
 $type = $_POST['type'];
 
-
-if(strlen($login) > 31){
-  echo -1;
+if(!StringChecker::Check('login', $login)){
+  echo 'ELF';
   return;
 }
-if(strlen($password) > 31){
-  echo -2;
-  return;
+//Temporarily
+if($password != "test123"){
+  if(!StringChecker::Check('pass', $password)){
+    echo 'EPF';
+    return;
+  }
 }
 
 switch ($type) {
