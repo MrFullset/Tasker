@@ -75,10 +75,18 @@ Methods:
   projectName_Changed(e)
     Updates project name. Calls when project-name got updated
 
+  checkString(type, string)
+    Checks if input matching to the pattern. Takes as arguments TYPE (list below)
+    and STRING.
+    Allowed types:
+      'innerHTML' - simple text strings
+      'id'        - ids
+
 
  *unfilled task|project means task|project, that was created by user, but
   wasn't submitted by Enter
 */
+
 
 
 window.onload = function(){
@@ -127,13 +135,42 @@ function updateEventListeners(){
   window.updProjectName = (document.getElementById('E') != null) ? document.getElementById('E').firstChild.firstChild : 0;
 }
 
+function checkString(type, string){
+  switch (type) {
+    case 'innerHTML':
+      var regExp = new RegExp('^[^\'\";()<>]{1,30}$');
+      return regExp.test(string);
+      break;
+    case 'id':
+      var regExp = new RegExp('^[1-9]+$');
+      return regExp.test(string);
+      break;
+  }
+}
+
 function taskDelete_Clicked(){
   var taskID = this.parentElement.getAttribute("task_id");
+  if(taskID != "null"){
+    if(!checkString('id', taskID)){
+      alert('Modified ID!')
+      return;
+    }
+  }
+
   this.parentElement.remove();
   SendRequest('post', '../asyncHandler.php', 'type=deleteTask&task_id=' + taskID, function(){});
 }
 
 function taskPriotirizes_Clicked(){
+  if(!checkString('innerHTML', this.previousSibling.previousSibling.innerText)){
+    alert('Incorrect format! 1-30 symbols. Not allowed \' \" ; ( ) < >')
+    return;
+  }
+  if(!checkString('id', this.parentElement.getAttribute("task_id"))){
+    alert('Modified ID!')
+    return;
+  }
+
   var taskID = this.parentElement.getAttribute("task_id");
   var taskName = this.previousSibling.previousSibling.innerText;
   var projects = document.getElementsByClassName('projects')[0];
@@ -189,6 +226,11 @@ function discardAddTask_Click(){
 
 function taskState_Changed(){
   var task = this.parentElement;
+  if(!checkString('id', task.getAttribute("task_id"))){
+    alert('Modified ID!')
+    return;
+  }
+
   var taskID = task.getAttribute("task_id");
   SendRequest('post', '../asyncHandler.php', 'type=checkBoxChanged&task_id=' + taskID, function(){});
   if(!this.checked)
@@ -198,13 +240,18 @@ function taskState_Changed(){
 }
 
 function addNewTask_Done(parent){
+  if(!checkString('innerHTML', parent.firstChild.value)){
+    alert('Incorrect format! 1-30 symbols. Not allowed \' \" ; ( ) < >')
+    return;
+  }
+  if(!checkString('id', parent.parentElement.parentElement.parentElement.getAttribute('project_id'))){
+    alert('Modified ID!')
+    return;
+  }
+
   window.updTaskName.removeEventListener("keypress", addNewTask_KeyPressed, false);
   var taskName = parent.firstChild.value;
   var projectID = parent.parentElement.parentElement.parentElement.getAttribute('project_id');
-  if(taskName.length <= 0 || taskName.length > 30){
-    alert("Incorrect length! (0, 31) symbols");
-    return;
-  }
   SendRequest('post', '../asyncHandler.php', 'type=addNewTask&name=' + taskName + '&project_id=' + projectID, function(res){
     if(res == -1){
       alert("Error occured!");
@@ -219,11 +266,16 @@ function addNewTask_Done(parent){
 }
 
 function taskName_Out(e){
-  var taskName = e.firstChild.value;
-  if(taskName.length <= 0 || taskName.length > 30){
-    alert("Incorrect length! (0, 31) symbols");
+  if(!checkString('innerHTML', e.firstChild.value)){
+    alert('Incorrect format! 1-30 symbols. Not allowed \' \" ; ( ) < >')
     return;
   }
+  if(!checkString('id', e.parentElement.getAttribute("task_id"))){
+    alert('Modified ID!')
+    return;
+  }
+
+  var taskName = e.firstChild.value;
   var taskID = e.parentElement.getAttribute("task_id");
   SendRequest('post', '../asyncHandler.php', 'type=taskNameChange&task_id=' + taskID + '&name=' + taskName, function(){});
   e.innerHTML = taskName;
@@ -272,12 +324,12 @@ function discardAddProject_Click(){
 function addNewProject_Done(e){
   var key = e.which || e.keyCode;
   if (key === 13) {
-    window.updProjectName.removeEventListener("keypress", addNewProject_Done, false);
-    var projectName = this.firstChild.value;
-    if(projectName.length <= 0 || projectName.length > 30){
-      alert("Incorrect length! (0, 31) symbols");
+    if(!checkString('innerHTML', this.firstChild.value)){
+      alert('Incorrect format! 1-30 symbols. Not allowed \' \" ; ( ) < >')
       return;
     }
+    window.updProjectName.removeEventListener("keypress", addNewProject_Done, false);
+    var projectName = this.firstChild.value;
     SendRequest('post', '../asyncHandler.php', 'type=addNewProject&name=' + projectName, function(res){
       if(res == -1){
         alert("Error occured!");
@@ -314,11 +366,16 @@ function taskNames_DblClicked(){
 }
 
 function projectName_Out(e){
-  var projectName = e.firstChild.value;
-  if(projectName.length <= 0 || projectName.length > 30){
-    alert("Incorrect length! (0, 31) symbols");
+  if(!checkString('innerHTML', e.firstChild.value)){
+    alert('Incorrect format! 1-30 symbols. Not allowed \' \" ; ( ) < >')
     return;
   }
+  if(!checkString('id', e.parentElement.parentElement.getAttribute("project_id"))){
+    alert('Modified ID!')
+    return;
+  }
+
+  var projectName = e.firstChild.value;
   var projectID = e.parentElement.parentElement.getAttribute("project_id");
   if(projectID == "null"){
     SendRequest('post', '../asyncHandler.php', 'type=addNewProject&name=' + projectName, function(res){
@@ -342,10 +399,16 @@ function taskName_Changed(e){
   var key = e.which || e.keyCode;
   if (key === 13) {
     var taskName = (this.firstChild.value == undefined) ? this.firstChild.data : this.firstChild.value;
-    if(taskName.length <= 0 || taskName.length > 30){
-      alert("Incorrect length! (0, 31) symbols");
+
+    if(!checkString('innerHTML', taskName)){
+      alert('Incorrect format! 1-30 symbols. Not allowed \' \" ; ( ) < >')
       return;
     }
+    if(!checkString('id', this.parentElement.getAttribute("task_id"))){
+      alert('Modified ID!')
+      return;
+    }
+
     var taskID = this.parentElement.getAttribute("task_id");
     SendRequest('post', '../asyncHandler.php', 'type=taskNameChange&task_id=' + taskID + '&name=' + taskName, function(){});
     this.innerHTML = taskName;
@@ -354,6 +417,11 @@ function taskName_Changed(e){
 }
 
 function projectDelete_Clicked(){
+  if(!checkString('id', this.parentElement.parentElement.getAttribute("project_id"))){
+    alert('Modified ID!')
+    return;
+  }
+
   var projectID = this.parentElement.parentElement.getAttribute("project_id");
   var projects = document.getElementsByClassName('projects')[0];
   this.parentElement.parentElement.remove();
@@ -367,14 +435,21 @@ function projectDelete_Clicked(){
 function projectName_Changed(e){
   var key = e.which || e.keyCode;
   if (key === 13) {
-    var projectName = this.firstChild.value;
-    if(projectName.length <= 0 || projectName.length > 30){
-      alert("Incorrect length! (0, 31) symbols");
+    if(!checkString('innerHTML', this.firstChild.value)){
+      alert('Incorrect format! 1-30 symbols. Not allowed \' \" ; ( ) < >');
       return;
     }
+    if(!checkString('id', this.parentElement.parentElement.getAttribute("project_id"))){
+      alert('Modified ID!')
+      return;
+    }
+
+    var projectName = this.firstChild.value;
     var projectID = this.parentElement.parentElement.getAttribute("project_id");
     SendRequest('post', '../asyncHandler.php', 'type=projectNameChange&project_id=' + projectID + '&name=' + projectName, function(){});
     this.innerHTML = projectName;
     window.updProjectName = 0;
   }
+
+
 }
