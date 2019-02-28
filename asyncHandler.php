@@ -73,6 +73,7 @@ Server also could return specific error code in case of errors:
   ERROR2 - serialized User instance doesn't exists in session
   ERROR3 - type of request wasn't sent
   ERROR4 - type of request isn't from allowed list
+  ERROR5 - type isn't matching to allowed pattern
 **/
 
 
@@ -104,12 +105,24 @@ else{
   }
 }
 
+$stringChecker = new StringChecker();
+
 $type = $_POST['type'];
+if(!$stringChecker->SCheck('innerHTML', $type)){
+  echo 'ERROR5';
+  exit();
+}
+
 $mysql = new MySQLProvider();
 $mysql->Connect();
 
 switch ($type) {
   case 'checkBoxChanged':
+    //is ID matching
+    if(!$stringChecker->SCheck('id', $_POST['task_id'])){
+      echo 0;
+      return;
+    }
     $task = new Task($_POST['task_id']);
     if($user->getID() == $task->getUserID()){
       $task->ChangeState();
@@ -118,6 +131,11 @@ switch ($type) {
     else echo 0;
     break;
   case 'deleteTask':
+    //is ID matching
+    if(!$stringChecker->SCheck('id', $_POST['task_id'])){
+      echo 0;
+      return;
+    }
     $task = new Task($_POST['task_id']);
     if($user->getID() == $task->getUserID()){
       $task->Delete();
@@ -126,6 +144,11 @@ switch ($type) {
     else echo 0;
     break;
   case 'deleteProject':
+    //is ID matching
+    if(!$stringChecker->SCheck('id', $_POST['project_id'])){
+      echo 0;
+      return;
+    }
     $project = new Project($_POST['project_id']);
     if($user->getID() == $project->getUserID()){
       $project->Delete();
@@ -134,8 +157,13 @@ switch ($type) {
     else echo 0;
     break;
   case 'projectNameChange':
+  //is ID matching
+    if(!$stringChecker->SCheck('id', $_POST['project_id'])){
+      echo 0;
+      return;
+    }
     //is name in allowed arrange
-    if(!StringChecker::Check('innerHTML', $_POST['name'])){
+    if(!$stringChecker->SCheck('innerHTML', $_POST['name'])){
       echo 0;
       return;
     }
@@ -148,8 +176,13 @@ switch ($type) {
     else echo 0;
     break;
   case 'taskNameChange':
+    //is ID matching
+    if(!$stringChecker->SCheck('id', $_POST['task_id'])){
+      echo 0;
+      return;
+    }
     //is name in allowed arrange
-    if(!StringChecker::Check('innerHTML', $_POST['name'])){
+    if(!$stringChecker->SCheck('innerHTML', $_POST['name'])){
       echo 0;
       return;
     }
@@ -163,7 +196,7 @@ switch ($type) {
     break;
   case 'addNewProject':
     //is name in allowed arrange
-    if(!StringChecker::Check('innerHTML', $_POST['name'])){
+    if(!$stringChecker->SCheck('innerHTML', $_POST['name'])){
       echo 0;
       return;
     }
@@ -173,7 +206,7 @@ switch ($type) {
     break;
   case 'addNewTask':
     //is name in allowed arrange
-    if(!StringChecker::Check('innerHTML', $_POST['name'])){
+    if(!$stringChecker->SCheck('innerHTML', $_POST['name'])){
       echo 0;
       return;
     }
@@ -187,8 +220,13 @@ switch ($type) {
     $_SESSION = array();
     break;
   case 'priotirizeTaskToProject':
+    //is ID matching
+    if(!$stringChecker->SCheck('id', $_POST['task_id'])){
+      echo 0;
+      return;
+    }
     //is name in allowed arrange
-    if(!StringChecker::Check('innerHTML', $_POST['name'])){
+    if(!$stringChecker->SCheck('innerHTML', $_POST['task_name'])){
       echo 0;
       return;
     }
